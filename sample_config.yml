@@ -1,0 +1,4 @@
+- repo: /path/to/repo1
+  password: password1
+- repo: /path_to/repo2
+  password: 2password
