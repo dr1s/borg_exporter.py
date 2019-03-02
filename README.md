@@ -12,8 +12,6 @@ A prometheus exporter/node_exporter text collector for borg backup
       -h, --help            show this help message and exit
       -c CONFIG, --config CONFIG
                             borg_exporter config
-      -o OUTPUT, --output OUTPUT
-                            text collector dir
 
 ## Example Metrics
 

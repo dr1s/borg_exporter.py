@@ -1,4 +1,6 @@
-- repo: /path/to/repo1
-  password: password1
-- repo: /path_to/repo2
-  password: 2password
+output_file: /path/to/text_collector_dir/borg.prom
+repos:
+  - repo: /path/to/repo1
+    password: password1
+  - repo: /path_to/repo2
+    password: 2password
