@@ -79,7 +79,6 @@ class borg_exporter():
         self.process_repos()
 
     def print_help(self, metric_name, desc=None):
-
         if desc is None:
             desc = metric_name.replace('_', ' ')
         output = '# HELP %s %s\n' % (metric_name, desc)
@@ -88,14 +87,14 @@ class borg_exporter():
 
     def process_repos(self):
         for repo in self.config:
-            b = borg_repo(repo['repo'], repo['password'])
-            b.get_archives_data()
-            self.data.append(b.data)
+            if os.path.exists(repo['repo']) and os.path.isdir(repo['repo']):
+                b = borg_repo(repo['repo'], repo['password'])
+                b.get_archives_data()
+                self.data.append(b.data)
+            else:
+                print('repo not found, skipping: %s' % repo['repo'])
 
     def generate_prometheus_metrics(self):
-        if len(self.data) > 1:
-            metric_names = [*self.data[0]]
-
         output = self.print_help('borg_repo_archives_count')
         for r in self.data:
             output += 'borg_repo_archives_count{repo="%s"} %i\n' % (
