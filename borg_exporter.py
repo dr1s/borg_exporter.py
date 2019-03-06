@@ -96,34 +96,36 @@ class borg_exporter():
 
     def generate_prometheus_metrics(self):
         output = self.print_help('borg_repo_archives_count')
-        for r in self.data:
-            output += 'borg_repo_archives_count{repo="%s"} %i\n' % (
-                r['path'], r['archive_count'])
-
-        stats_keys = [*self.data[0]['stats']]
-        for s in stats_keys:
-            output += self.print_help('borg_repo_%s' % s)
+        if len(self.data) > 0:
             for r in self.data:
-                output += 'borg_repo_%s{repo="%s"} %f\n' % (s, r['path'],
-                                                            r['stats'][s])
+                output += 'borg_repo_archives_count{repo="%s"} %i\n' % (
+                    r['path'], r['archive_count'])
 
-        output += self.print_help('borg_archive_duration')
-        for r in self.data:
-            if len(r['archives']) > 0:
-                for a in r['archives']:
-                    archive_stats_keys = [*a['stats']]
-                    output += 'borg_archive_duration{client_hostname='
-                    output += '"%s", name="%s", repo="%s"} %f\n' % (
-                        a['hostname'], a['name'], r['path'], a['duration'])
+            stats_keys = [*self.data[0]['stats']]
+            for s in stats_keys:
+                output += self.print_help('borg_repo_%s' % s)
+                for r in self.data:
+                    output += 'borg_repo_%s{repo="%s"} %f\n' % (s, r['path'],
+                                                                r['stats'][s])
 
-        for s in archive_stats_keys:
-            output += self.print_help('borg_archive_%s' % s)
+            output += self.print_help('borg_archive_duration')
             for r in self.data:
-                for a in r['archives']:
-                    output += 'borg_archive_'
-                    output += '%s{client_hostname="%s", name="%s", repo="%s"} %f\n' % (
-                        s, a['hostname'], a['name'], r['path'],
-                        a['stats'][s])
+                if len(r['archives']) > 0:
+                    for a in r['archives']:
+                        archive_stats_keys = [*a['stats']]
+                        output += 'borg_archive_duration{client_hostname='
+                        output += '"%s", name="%s", repo="%s"} %f\n' % (
+                            a['hostname'], a['name'], r['path'], a['duration'])
+
+            for s in archive_stats_keys:
+                output += self.print_help('borg_archive_%s' % s)
+                for r in self.data:
+                    if len(r['archives']) > 0:
+                        for a in r['archives']:
+                            output += 'borg_archive_%s' % s
+                            output += '{client_hostname="%s",' % a['hostname']
+                            output += 'name="%s", repo="%s"} %f\n' % (
+                                a['name'], r['path'], a['stats'][s])
         return output
 
     def write_to_file(self, filename):
