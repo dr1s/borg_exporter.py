@@ -6,7 +6,7 @@ A prometheus exporter/node_exporter text collector for borg backup
 ## Usage
     usage: borg_exporer.py [-h] -c CONFIG -o OUTPUT
 
-    pihole_exporter
+    borg_exporter
 
     optional arguments:
       -h, --help            show this help message and exit

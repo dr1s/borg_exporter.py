@@ -20,11 +20,12 @@
 #   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #   SOFTWARE.
 
-import argparse
-import yaml
 import subprocess
 import os
 import json
+import argparse
+import yaml
+
 
 
 def load_config(config_path):
@@ -78,6 +79,7 @@ class borg_exporter():
         self.data = list()
         self.process_repos()
 
+    @classmethod
     def print_help(self, metric_name, desc=None):
         if desc is None:
             desc = metric_name.replace('_', ' ')
@@ -138,7 +140,7 @@ class borg_exporter():
 
 
 def main():
-    parser = argparse.ArgumentParser(description='pihole_exporter')
+    parser = argparse.ArgumentParser(description='borg_exporter')
     parser.add_argument(
         '-c', '--config', help='borg_exporter config', required=True)
     args = parser.parse_args()
