@@ -107,23 +107,23 @@ class borg_exporter():
                 output += 'borg_repo_%s{repo="%s"} %f\n' % (s, r['path'],
                                                             r['stats'][s])
 
-        if len(self.data[0]['archives']) > 0:
-            output += self.print_help('borg_archive_duration')
-            for r in self.data:
+        output += self.print_help('borg_archive_duration')
+        for r in self.data:
+            if len(r['archives']) > 0:
                 for a in r['archives']:
+                    archive_stats_keys = [*a['stats']]
                     output += 'borg_archive_duration{client_hostname='
                     output += '"%s", name="%s", repo="%s"} %f\n' % (
                         a['hostname'], a['name'], r['path'], a['duration'])
 
-            archive_stats_keys = [*self.data[0]['archives'][0]['stats']]
-            for s in archive_stats_keys:
-                output += self.print_help('borg_archive_%s' % s)
-                for r in self.data:
-                    for a in r['archives']:
-                        output += 'borg_archive_'
-                        output += '%s{client_hostname="%s", name="%s", repo="%s"} %f\n' % (
-                            s, a['hostname'], a['name'], r['path'],
-                            a['stats'][s])
+        for s in archive_stats_keys:
+            output += self.print_help('borg_archive_%s' % s)
+            for r in self.data:
+                for a in r['archives']:
+                    output += 'borg_archive_'
+                    output += '%s{client_hostname="%s", name="%s", repo="%s"} %f\n' % (
+                        s, a['hostname'], a['name'], r['path'],
+                        a['stats'][s])
         return output
 
     def write_to_file(self, filename):
