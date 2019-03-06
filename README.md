@@ -37,3 +37,10 @@ A prometheus exporter/node_exporter text collector for borg backup
     borg_archive_nfiles{client_hostname="testhost", name="testhost-2019-03-01T22:00:19.263098", repo="/path/to/repo"} 2849.000000
     borg_archive_deduplicated_size{client_hostname="testhost", name="testhost-2019-03-01T22:00:19.263098", repo="/path/to/repo"} 139533.000000
     borg_archive_compressed_size{client_hostname="testhost", name="testhost-2019-03-01T22:00:19.263098", repo="/path/to/repo"} 131597892.000000
+
+
+## Cron
+
+This exporter just calls the `borg` shell command, so make sure it's accessible in your $PATH.
+
+    0 0 * * * PATH=$PATH:/usr/local/bin /path/to/borg_exporter.py -c /path/to/config.yml
