@@ -52,25 +52,32 @@ class borg_repo():
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             env=pass_env)
-        data = json.loads(proc.stdout.decode('utf-8'))
+        try:
+            data = json.loads(proc.stdout.decode('utf-8'))
+        except json.decoder.JSONDecodeError:
+            print('Repository can\`t be accessed. Might be locked.')
+            data = None
         return data
 
     def get_archives_data(self):
         print("Checking repo: %s" % self.path)
         info = self.get_data('info')
         archives = self.get_data('list')
-        self.data['archive_count'] = len(archives['archives'])
-        self.data['stats'] = info['cache']['stats']
-        self.data['archives'] = list()
-        for archive in archives['archives']:
-            info_archive = self.get_data('info', archive['archive'])
-            for dump_archive in info_archive['archives']:
-                archive_dict = dict()
-                archive_dict['name'] = dump_archive['name']
-                archive_dict['duration'] = dump_archive['duration']
-                archive_dict['stats'] = dump_archive['stats']
-                archive_dict['hostname'] = dump_archive['hostname']
-                self.data['archives'].append(archive_dict)
+        if archives:
+            self.data['archive_count'] = len(archives['archives'])
+        if info:
+            self.data['stats'] = info['cache']['stats']
+        if archives:
+            self.data['archives'] = list()
+            for archive in archives['archives']:
+                info_archive = self.get_data('info', archive['archive'])
+                for dump_archive in info_archive['archives']:
+                    archive_dict = dict()
+                    archive_dict['name'] = dump_archive['name']
+                    archive_dict['duration'] = dump_archive['duration']
+                    archive_dict['stats'] = dump_archive['stats']
+                    archive_dict['hostname'] = dump_archive['hostname']
+                    self.data['archives'].append(archive_dict)
 
 
 class borg_exporter():
@@ -92,7 +99,8 @@ class borg_exporter():
             if os.path.exists(repo['repo']) and os.path.isdir(repo['repo']):
                 b = borg_repo(repo['repo'], repo['password'])
                 b.get_archives_data()
-                self.data.append(b.data)
+                if 'archive_count' in b.data:
+                    self.data.append(b.data)
             else:
                 print('repo not found, skipping: %s' % repo['repo'])
 
